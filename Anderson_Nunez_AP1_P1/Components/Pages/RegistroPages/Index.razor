@@ -1,4 +1,7 @@
 ﻿@page "/Registro/Index"
+@using Anderson_Nunez_AP1_P1.Models
+@inject RegistroService registroService
+@inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 
@@ -24,7 +27,7 @@
             <div class=" row align-items-center mb-3">
                 <div class=" col-3">
                     <ImputSelect class="form-select" @bind-value= "Filtro">
-                        <option value="" selected disabled>Elija Una Opcion</option>
+                        <option value="" selected disabled>Elija Una Opci&oacute;</option>
                         <option value="Id">Id</option>
 
                     </ImputSelect>
@@ -72,6 +75,13 @@
                             {
                                 <tr>
                                     <td>@item.Id</td>
+
+                                    <td>
+                                        <a href="/Clientes/Edit/@registro.RegistroId"
+                                           class="btn btn-outline-primary bi bi-pencil-square"
+                                           title="Editar registro">
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         }
@@ -87,7 +97,7 @@
 
         </div>
             <div class="card-footer space-between">
-                <label>Cantidad de Registro: @(ListaTickets?.Count() ?? 0)</label>
+                <label>Cantidad de Registro: @(Listaregistro?.Count() ?? 0)</label>
             </div>
     </div>  
 </div>  
@@ -95,9 +105,85 @@
 
 
 
-
-
-
 @code {
+    public Registro registro = new Registro();
+    public List<Registro> ListaRegistro = new List<Registro>();
+    public List<Registro> ListaFiltrada = new List<Registro>();
 
+    public string Filtro { get; set; } = "";
+    public string ValorFiltro { get; set; } = "";
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarRegistros();
+    }
+
+    private async Task CargarRegistros()
+    {
+        ListaRegistro = await registroService.Listar(p => true);
+        ListaFiltrada = ListaRegistro; 
+    }
+
+    
+    private async Task Buscar()
+    {
+        if (string.IsNullOrWhiteSpace(Filtro) || string.IsNullOrWhiteSpace(ValorFiltro))
+        {
+            ListaFiltrada = ListaRegistro;
+            return;
+        }
+
+        switch (Filtro)
+        {
+            case "Id":
+                if (int.TryParse(ValorFiltro, out int id))
+                {
+                    ListaFiltrada = ListaRegistro.Where(r => r.Id == id).ToList();
+                }
+                break;
+            
+            default:
+                ListaFiltrada = ListaRegistro;
+                break;
+        }
+    }
+
+   
+    private async Task FiltrarPorFecha()
+    {
+        if (FechaDesde == null && FechaHasta == null)
+        {
+            ListaFiltrada = ListaRegistro;
+            return;
+        }
+
+       
+        if (FechaHasta == null)
+        {
+            ListaFiltrada = ListaRegistro.Where(r => r.Fecha >= FechaDesde).ToList();
+            return;
+        }
+
+        
+        if (FechaDesde == null)
+        {
+            ListaFiltrada = ListaRegistro.Where(r => r.Fecha <= FechaHasta).ToList();
+            return;
+        }
+
+        
+        ListaFiltrada = ListaRegistro.Where(r => r.Fecha >= FechaDesde && r.Fecha <= FechaHasta).ToList();
+    }
+
+   
+    private async Task LimpiarFiltros()
+    {
+        Filtro = "";
+        ValorFiltro = "";
+        FechaDesde = null;
+        FechaHasta = null;
+        ListaFiltrada = ListaRegistro;
+    }
 }
