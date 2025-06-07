@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="microsoft.entityframeworkcore" Version="9.0.5" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="9.0.5" />
+	  <PackageReference Include="Blazored.Toast" Version="4.2.1" />
     <PackageReference Include="microsoft.entityframeworkcore.tools" Version="9.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

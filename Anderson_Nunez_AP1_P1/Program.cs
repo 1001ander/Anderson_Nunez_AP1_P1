@@ -1,9 +1,16 @@
 using Anderson_Nunez_AP1_P1.Components;
 using Anderson_Nunez_AP1_P1.DAL;
+using Blazored.Toast;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
+
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Inyeccion del servicio Toast 
+builder.Services.AddBlazoredToast();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
