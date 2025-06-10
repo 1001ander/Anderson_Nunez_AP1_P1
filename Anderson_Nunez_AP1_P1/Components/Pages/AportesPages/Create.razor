@@ -1,0 +1,72 @@
+﻿@page "/Aportes/Create"
+@using Blazored.Toast.Services
+@using Anderson_Nunez_AP1_P1.Models
+@inject AportesService aporteService
+@inject IToastService toastService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Crear Aporte</PageTitle>
+
+<EditForm Model="Aportes" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h3><strong>Crear un nuevo Aporte</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-2">
+                        <label class="form-label" for="Id"><strong>AporteId</strong></label>
+                        <InputNumber class="form-control" id="Id" @bind-Value="Aportes.AporteId" readonly />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="Monto"><strong>Monto</strong></label>
+                        <InputNumber class="form-control" id="Monto" @bind-Value="Aportes.Monto" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-outline-primary" @onclick="Volver">Volver</button>
+                <button type="submit" class="btn btn-outline-success">Crear</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Aportes Aportes { get; set; } = new Aportes();
+
+    private async Task Guardar()
+    {
+        if (await Validar())
+        {
+            toastService.ShowWarning("Ya existe un aporte con ese Id.");
+            return;
+        }
+
+        var creado = await aporteService.Guardar(Aportes);
+        if (creado)
+        {
+            toastService.ShowSuccess($"Aporte #{Aportes.AporteId} creado correctamente.");
+            Volver();
+        }
+        else
+        {
+            toastService.ShowError("Error al crear el aporte.");
+        }
+    }
+
+    private async Task<bool> Validar()
+    {
+        var existente = await aporteService.Buscar(Aportes.AporteId);
+        return existente != null;
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/Aportes/Index");
+    }
+}
