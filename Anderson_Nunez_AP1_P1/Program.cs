@@ -8,7 +8,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddBlazorBootstrap();
 
 // Inyeccion del servicio Toast 
 builder.Services.AddBlazoredToast();
