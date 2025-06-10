@@ -3,14 +3,19 @@
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
+<PageTitle>Consulta de Aportes</PageTitle>
+
 <div class="container">
     <div class="card shadow-lg">
+        @*Header*@
         <div class="card-header d-flex justify-content-between align-items-center position-relative">
-            <h5 class="card-title mb-0 text-center w-100">Aporte</h5>
+            <h5 class="card-title mb-0 text-center w-100">Consulta de Aportes</h5>
         </div>
+
+        @*Body*@
         <div class="card-body">
             @* Filtro *@
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col-3">
                     <label class="col-form-label"><strong>Filtrar por</strong></label>
                 </div>
@@ -61,14 +66,14 @@
 
             @* Tabla *@
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover mt-3">
                     <thead class="table table-striped text-black">
                         <tr>
                             <th>AporteId</th>
                             <th>Fecha</th>
                             <th>Nombre</th>
                             <th>Monto</th>
-                            <th>Editar</th>
+                            <th class="text-center">Editar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,11 +86,8 @@
                                     <td>@aporte.Fecha.ToShortDateString()</td>
                                     <td>@aporte.Nombre</td>
                                     <td>@aporte.Monto.ToString("C")</td>
-                                    <td>
-                                        <a href="/Aportes/Edit/@aporte.AporteId"
-                                           class="btn btn-outline-primary bi bi-pencil-square"
-                                           title="Editar Aporte">
-                                        </a>
+                                    <td class="text-center">
+                                        <a href="/Aportes/Edit/@aporte.AporteId" class="btn btn-sm btn-outline-primary bi bi-pencil-square"></a>
                                     </td>
                                 </tr>
                             }
@@ -99,17 +101,21 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="card-footer space-between">
-                <label>Cantidad de Aportes: @(ListaFiltrada?.Count() ?? 0)</label>
-            </div>
         </div>
+
+        @*Footer*@
+        <div class="card-footer d-flex justify-content-between">
+            <label>Cantidad de Aportes: @(ListaFiltrada?.Count() ?? 0)</label>
+            <label>Total Monto: @TotalMontoFiltrado.ToString("C")</label>
+        </div>
+        
     </div>
 </div>
 
 @code {
     private List<Aportes> ListaAporte = new();
     private List<Aportes> ListaFiltrada = new();
+    private decimal TotalMontoFiltrado => ListaFiltrada?.Sum(a => a.Monto) ?? 0;
 
     private string Filtro { get; set; } = "";
     private string ValorFiltro { get; set; } = "";
@@ -123,7 +129,7 @@
 
     private async Task CargarAportes()
     {
-        ListaAporte = await aporteService.Listar(); 
+        ListaAporte = await aporteService.Listar();
         ListaFiltrada = ListaAporte;
     }
 
