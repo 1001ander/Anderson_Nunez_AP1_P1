@@ -1,6 +1,7 @@
 ﻿@page "/Aportes/Index"
 @inject AportesService aporteService
 @inject NavigationManager navigationManager
+@using BlazorBootstrap
 @rendermode InteractiveServer
 
 <PageTitle>Consulta de Aportes</PageTitle>
@@ -14,16 +15,37 @@
 
         @*Body*@
         <div class="card-body">
-            @* Filtro *@
+            
+            <div class="row mb-2">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <a href="/Aportes/Create" class="btn btn-success bi bi-plus-circle"> Crear</a>
+                </div>
+            </div>
+
+            
+            <div class="row align-items-center mb-3">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Rango de Fechas</strong></label>
+                </div>
+                <div class="col-9">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date" class="form-control" style="width: 140px;" @bind="FechaDesde" />
+                        <span class="text-muted">a</span>
+                        <input type="date" class="form-control" style="width: 140px;" @bind="FechaHasta" />
+                        <button type="button" class="btn btn-info ms-2" @onclick="FiltrarPorFecha">
+                            <i class="bi bi-filter"></i> Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @*Filtro*@
             <div class="row mb-2">
                 <div class="col-3">
                     <label class="col-form-label"><strong>Filtrar por</strong></label>
                 </div>
                 <div class="col-4">
                     <label class="col-form-label"><strong>Búsqueda</strong></label>
-                </div>
-                <div class="col-md-5 d-flex align-items-end justify-content-end mt-3 mt-md-0">
-                    <a href="/Aportes/Create" class="btn btn-success bi bi-plus-circle"> Crear</a>
                 </div>
             </div>
 
@@ -48,23 +70,7 @@
                 </div>
             </div>
 
-            <div class="row align-items-center mb-3">
-                <div class="col-3">
-                    <label class="col-form-label"><strong>Rango de Fechas</strong></label>
-                </div>
-                <div class="col-9">
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="date" class="form-control" style="width: 140px;" @bind="FechaDesde" />
-                        <span class="text-muted">a</span>
-                        <input type="date" class="form-control" style="width: 140px;" @bind="FechaHasta" />
-                        <button type="button" class="btn btn-info ms-2" @onclick="FiltrarPorFecha">
-                            <i class="bi bi-filter"></i> Aplicar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            @* Tabla *@
+            @*Tabla*@
             <div class="table-responsive">
                 <table class="table table-hover mt-3">
                     <thead class="table table-striped text-black">
@@ -87,7 +93,9 @@
                                     <td>@aporte.Nombre</td>
                                     <td>@aporte.Monto.ToString("C")</td>
                                     <td class="text-center">
-                                        <a href="/Aportes/Edit/@aporte.AporteId" class="btn btn-sm btn-outline-primary bi bi-pencil-square"></a>
+                                        <a href="/Aportes/Edit/@aporte.AporteId" class="btn btn-outline-primary btn-sm" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             }
@@ -108,7 +116,6 @@
             <label>Cantidad de Aportes: @(ListaFiltrada?.Count() ?? 0)</label>
             <label>Total Monto: @TotalMontoFiltrado.ToString("C")</label>
         </div>
-        
     </div>
 </div>
 
