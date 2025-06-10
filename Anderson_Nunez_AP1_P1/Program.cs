@@ -1,3 +1,4 @@
+using Anderson_Nunez_AP1_P1;
 using Anderson_Nunez_AP1_P1.Components;
 using Anderson_Nunez_AP1_P1.DAL;
 using Blazored.Toast;
@@ -11,19 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Inyeccion del servicio Toast 
 builder.Services.AddBlazoredToast();
+builder.Services.AddScoped<AportesService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 //Contexto
-var ConString = builder.Configuration.GetConnectionString("SqlConSrt");
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+var ConString = builder.Configuration.GetConnectionString("ConStr");
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConString));
 
-void ConStr(SqlServerDbContextOptionsBuilder builder)
-{
-    throw new NotImplementedException();
-}
+
 
 var app = builder.Build();
 
