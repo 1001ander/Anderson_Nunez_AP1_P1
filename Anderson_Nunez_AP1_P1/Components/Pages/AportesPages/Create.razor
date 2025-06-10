@@ -11,26 +11,54 @@
 <EditForm Model="Aportes" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <div class="container">
-        <div class="card shadow-lg">
-            <div class="card-header text-center">
-                <h3><strong>Crear un nuevo Aporte</strong></h3>
+
+    <div class="container mt-3">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h5>Crear Aporte</h5>
             </div>
+
             <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-2">
-                        <label class="form-label" for="Id"><strong>AporteId</strong></label>
-                        <InputNumber class="form-control" id="Id" @bind-Value="Aportes.AporteId" readonly />
-                    </div>
-                    <div class="col-4">
-                        <label class="form-label" for="Monto"><strong>Monto</strong></label>
-                        <InputNumber class="form-control" id="Monto" @bind-Value="Aportes.Monto" />
-                    </div>
+                @*Id Aporte*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aporte ID</strong></label>
+                    <InputNumber id="AporteId" class="form-control" @bind-Value="Aportes.AporteId" readonly></InputNumber>
+                </div>
+
+                @*Fecha*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate @bind-Value="Aportes.Fecha" class="form-control" />
+                    <ValidationMessage For="@(() => Aportes.Fecha)" />
+                </div>
+
+                @*Nombre*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText @bind-Value="Aportes.Nombre" class="form-control" />
+                    <ValidationMessage For="@(() => Aportes.Nombre)" />
+                </div>
+
+                @*Monto*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Monto</strong></label>
+                    <InputNumber @bind-Value="Aportes.Monto" class="form-control" />
+                    <ValidationMessage For="@(() => Aportes.Monto)" />
                 </div>
             </div>
+
             <div class="card-footer text-center">
-                <button type="button" class="btn btn-outline-primary" @onclick="Volver">Volver</button>
-                <button type="submit" class="btn btn-outline-success">Crear</button>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </button>
+                    <button type="submit" class="btn btn-outline-success me-2">
+                        <i class="bi bi-check-circle"></i> Guardar
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">
+                        <i class="bi bi-eraser"></i> Limpiar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -38,6 +66,17 @@
 
 @code {
     public Aportes Aportes { get; set; } = new Aportes();
+
+    private async Task Nuevo()
+    {
+        Aportes = new Aportes();
+    }
+
+    private async Task<bool> Validar()
+    {
+        var existente = await aporteService.Buscar(Aportes.AporteId);
+        return existente != null;
+    }
 
     private async Task Guardar()
     {
@@ -57,12 +96,6 @@
         {
             toastService.ShowError("Error al crear el aporte.");
         }
-    }
-
-    private async Task<bool> Validar()
-    {
-        var existente = await aporteService.Buscar(Aportes.AporteId);
-        return existente != null;
     }
 
     private void Volver()
