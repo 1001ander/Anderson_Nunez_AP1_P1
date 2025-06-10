@@ -1,0 +1,128 @@
+﻿@page "/Aportes/Edit/{AporteId:int}"
+@using Anderson_Nunez_AP1_P1.Models
+@using Blazored.Toast.Services
+@inject AportesService aportesService
+@inject IToastService toastService
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+@rendermode InteractiveServer
+
+<PageTitle>Editar Aporte</PageTitle>
+
+<EditForm Model="Aporte" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center bg-primary text-white">
+                <h5 class="card-title">Editar Aporte</h5>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombres</strong></label>
+                    <InputText class="form-control" @bind-Value="Aporte.Nombre" />
+                    <ValidationMessage For="@(() => Aporte.Nombre)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Monto</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Aporte.Monto" />
+                    <ValidationMessage For="@(() => Aporte.Monto)" />
+                </div>
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Guardar
+                </button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+        [Parameter]
+        public int AporteId { get; set; }
+
+    public Aportes Aporte { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Aporte = await aportesService.Buscar(AporteId);
+
+        if (Aporte == null)
+        {
+            toastService.ShowError("No se encontró el aporte");
+            navigationManager.NavigateTo("/Aportes/Index");
+        }
+    }
+
+    private void Volver()
+    {
+        navigationManager.NavigateTo("/Aportes/Index");
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            if (await aportesService.Existe(Aporte.AporteId))
+            {
+                toastService.ShowWarning("Ya existe un aporte con este nombre");
+                return;
+            }
+
+
+            bool resultado = await aportesService.Guardar(Aporte);
+
+            if (resultado)
+            {
+                toastService.ShowSuccess("Aporte guardado correctamente");
+                navigationManager.NavigateTo("/Aportes/Index");
+            }
+            else
+            {
+                toastService.ShowError("No se pudo guardar el aporte");
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        try
+        {
+            bool confirmado = await jsRuntime.InvokeAsync<bool>("confirm", "¿Está seguro de eliminar este aporte?");
+            if (!confirmado)
+                return;
+
+            bool resultado = await aportesService.Guardar(Aporte);
+
+            if (resultado)
+            {
+                toastService.ShowSuccess("Aporte guardado correctamente");
+                navigationManager.NavigateTo("/Aportes/Index");
+            }
+            else
+            {
+                toastService.ShowError("No se pudo guardar el aporte");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"Error al eliminar: {ex.Message}");
+        }
+    }
+}
