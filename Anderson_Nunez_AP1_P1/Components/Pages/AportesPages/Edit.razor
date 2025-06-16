@@ -81,7 +81,7 @@
             }
 
 
-            bool resultado = await aportesService.Guardar(Aporte);
+            bool resultado = await aportesService.Modificar(Aporte);
 
             if (resultado)
             {
@@ -107,7 +107,7 @@
             if (!confirmado)
                 return;
 
-            bool resultado = await aportesService.Guardar(Aporte);
+            bool resultado = await aportesService.Eliminar(Aporte.AporteId);
 
             if (resultado)
             {
